@@ -47,8 +47,7 @@ class App extends Component {
 
     return Object.keys(colorField).forEach(key => {
       const colorBlock = { ...colorField[key], status: COLORBLOCK_STATUS.ACTIVE };
-      const newColorKey = 7;
-      const newColorName = colorField[newColorKey].name;
+      const newColorName = 'grape';
 
       updatedColorBlocks.push(colorBlock);
       this.setState({ colorField: updatedColorBlocks });
@@ -56,9 +55,14 @@ class App extends Component {
       const whenColorBlockLoadCompletes = async () => {
         const callback = shouldUpdateColor => {
           if (shouldUpdateColor) {
-            this.updateColorBlock(key, { color: newColorName });
+            this.updateColorBlock(key, {
+              status: COLORBLOCK_STATUS.COMPLETE_CHANGED,
+              name: 'grape',
+            });
           } else {
-            this.updateColorBlock(key, { status: COLORBLOCK_STATUS.COMPLETE });
+            this.updateColorBlock(key, {
+              status: COLORBLOCK_STATUS.COMPLETE_UNCHANGED,
+            });
           }
         };
         await colorBlock.run(callback);

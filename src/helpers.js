@@ -16,13 +16,14 @@ const COLORBLOCK_COLORS = {
 const COLORBLOCK_STATUS = {
   INACTIVE: 0,
   ACTIVE: 1,
-  COMPLETE: 2,
+  COMPLETE_UNCHANGED: 2,
+  COMPLETE_CHANGED: 3,
 };
 
 const COLORBLOCK_COLOR_DEFAULT = '#bcbcbc';
 
 const colorblockLoad = () => {
-  const delay = 7000 + Math.random() * 7000;
+  const delay = 2000 + Math.random() * 2000;
   const updateColor = Math.random() > 0.5; // true or false
 
   return function delayedLoad(callback) {
