@@ -22,6 +22,8 @@ const COLORBLOCK_STATUS = {
 
 const COLORBLOCK_COLOR_DEFAULT = '#bcbcbc';
 
+// For the purposes of this proejct, this function cannot be changed
+// Imagine it is defined by a third party and must be lifted into a Promise in App.js
 const colorblockLoad = () => {
   const delay = 2000 + Math.random() * 2000;
   const updateColor = Math.random() > 0.5; // true or false

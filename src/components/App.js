@@ -41,39 +41,46 @@ class App extends Component {
     });
   };
 
-  loadColorsAndReturnPromises = () => {
+  startAsyncColors = () => {
     const { colorField } = this.state;
     const updatedColorBlocks = [];
+    const promises = [];
+    const self = this;
 
-    return Object.keys(colorField).forEach(key => {
+    Object.keys(colorField).forEach(key => {
       const colorBlock = { ...colorField[key], status: COLORBLOCK_STATUS.ACTIVE };
       const newColorName = 'grape';
 
       updatedColorBlocks.push(colorBlock);
       this.setState({ colorField: updatedColorBlocks });
 
-      const whenColorBlockLoadCompletes = async () => {
-        const callback = shouldUpdateColor => {
+      const p = new Promise(resolve => {
+        const updateColorsAfterLoad = shouldUpdateColor => {
           if (shouldUpdateColor) {
-            this.updateColorBlock(key, {
+            self.updateColorBlock(key, {
               status: COLORBLOCK_STATUS.COMPLETE_CHANGED,
-              name: 'grape',
+              name: newColorName,
             });
           } else {
-            this.updateColorBlock(key, {
+            self.updateColorBlock(key, {
               status: COLORBLOCK_STATUS.COMPLETE_UNCHANGED,
             });
           }
+          resolve();
         };
-        await colorBlock.run(callback);
-      };
 
-      whenColorBlockLoadCompletes();
+        colorBlock.run(updateColorsAfterLoad);
+      }).then(() => {
+        console.log('in this');
+      });
+      promises.push(p);
     });
-  };
 
-  startAsyncColors = async () => {
-    this.loadColorsAndReturnPromises();
+    Promise.all(promises)
+      .then(console.log('COMPLETED'))
+      .catch(err => {
+        console.error(err);
+      });
   };
 
   render() {
