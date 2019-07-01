@@ -26,7 +26,8 @@ class App extends Component {
     colorField: getColorField(),
   };
 
-  updateColorBlock = (key, colorBlockKeyValue) => {
+  // Update colorField nested state
+  updateColorField = (key, colorBlockKeyValue) => {
     const { colorField } = this.state;
     const colorBlock = colorField[key];
 
@@ -41,38 +42,46 @@ class App extends Component {
     });
   };
 
-  startAsyncColors = () => {
-    const { colorField } = this.state;
-    const updatedColorBlocks = [];
-    const promises = [];
+  returnColorLoadPromise = (colorBlock, colorFieldKey, newColorName) => {
     const self = this;
 
-    Object.keys(colorField).forEach(key => {
-      const colorBlock = { ...colorField[key], status: COLORBLOCK_STATUS.ACTIVE };
-      const newColorName = 'grape';
+    return new Promise(resolve => {
+      const updateColorsAfterLoadCallback = shouldUpdateColor => {
+        if (shouldUpdateColor) {
+          self.updateColorField(colorFieldKey, {
+            status: COLORBLOCK_STATUS.COMPLETE,
+            name: newColorName,
+          });
+        } else {
+          self.updateColorField(colorFieldKey, {
+            status: COLORBLOCK_STATUS.COMPLETE,
+          });
+        }
+        resolve();
+      };
 
+      colorBlock.run(updateColorsAfterLoadCallback);
+    });
+  };
+
+  startAsyncColors = () => {
+    const { colorField } = this.state;
+    const colorFieldArray = Object.keys(colorField);
+    const updatedColorBlocks = [];
+    const promises = [];
+
+    colorFieldArray.forEach(colorFieldKey => {
+      const colorBlock = {
+        ...colorField[colorFieldKey],
+        status: COLORBLOCK_STATUS.ACTIVE,
+      };
+      const newColorIndex = Math.floor(Math.random() * colorFieldArray.length);
+      const newColorName = colorField[newColorIndex].name;
       updatedColorBlocks.push(colorBlock);
       this.setState({ colorField: updatedColorBlocks });
 
-      const p = new Promise(resolve => {
-        const updateColorsAfterLoad = shouldUpdateColor => {
-          if (shouldUpdateColor) {
-            self.updateColorBlock(key, {
-              status: COLORBLOCK_STATUS.COMPLETE_CHANGED,
-              name: newColorName,
-            });
-          } else {
-            self.updateColorBlock(key, {
-              status: COLORBLOCK_STATUS.COMPLETE_UNCHANGED,
-            });
-          }
-          resolve();
-        };
+      const p = this.returnColorLoadPromise(colorBlock, colorFieldKey, newColorName);
 
-        colorBlock.run(updateColorsAfterLoad);
-      }).then(() => {
-        console.log('in this');
-      });
       promises.push(p);
     });
 

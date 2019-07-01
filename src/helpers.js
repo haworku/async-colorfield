@@ -16,13 +16,12 @@ const COLORBLOCK_COLORS = {
 const COLORBLOCK_STATUS = {
   INACTIVE: 0,
   ACTIVE: 1,
-  COMPLETE_UNCHANGED: 2,
-  COMPLETE_CHANGED: 3,
+  COMPLETE: 2,
 };
 
 const COLORBLOCK_COLOR_DEFAULT = '#bcbcbc';
 
-// For the purposes of this proejct, this function cannot be changed
+// For the purposes of this project, this function cannot be changed
 // Imagine it is defined by a third party and must be lifted into a Promise in App.js
 const colorblockLoad = () => {
   const delay = 2000 + Math.random() * 2000;

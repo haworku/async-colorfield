@@ -20,7 +20,7 @@ class ColorBlock extends Component {
       case COLORBLOCK_STATUS.INACTIVE:
         return COLORBLOCK_COLOR_DEFAULT;
       case COLORBLOCK_STATUS.ACTIVE:
-      case COLORBLOCK_STATUS.COMPLETE_CHANGED:
+      case COLORBLOCK_STATUS.COMPLETE:
         return COLORBLOCK_COLORS[colorName];
       default:
         return COLORBLOCK_COLOR_DEFAULT;
