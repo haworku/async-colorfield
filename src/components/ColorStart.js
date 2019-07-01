@@ -2,24 +2,23 @@ import React, { Component } from 'react';
 
 const style = {
   button: {
-    backgroundColor: '#873f92',
+    border: 'none',
     fontSize: '1rem',
-    fontWeight: 'bold',
-    padding: '1rem',
-  },
-  span: {
-    color: '#2cbdda',
-    fontSize: '2rem',
-    fontWeight: 'bold',
-    padding: '1rem',
+    padding: '.4rem .1rem',
+    margin: '.5rem',
   },
 };
 
 class ColorStart extends Component {
   render() {
     return (
-      <div>
-        <button type="button" style={style.button} onClick={this.props.startAction}>
+      <div id="ColorStart">
+        <button
+          id="ColorStartButton"
+          type="button"
+          style={style.button}
+          onClick={this.props.startAction}
+        >
           <span> start the colors </span>
         </button>
       </div>

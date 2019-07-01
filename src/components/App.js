@@ -6,18 +6,14 @@ import { getColorField, COLORBLOCK_STATUS } from '../helpers';
 const style = {
   container: {
     display: 'flex',
-    minHeight: '100%',
     flexDirection: 'column',
-  },
-  header: {
-    borderBottom: 'double',
-    height: '2rem',
-    lineHeight: '2rem',
-    textAlign: 'center',
+    flex: '1 0 auto',
+    height: '100%',
   },
   main: {
+    flexDirection: 'column',
     display: 'flex',
-    flex: 1,
+    flex: '1 0 100%',
   },
 };
 
@@ -95,8 +91,10 @@ class App extends Component {
   render() {
     const { colorField } = this.state;
     return (
-      <div style={style.container}>
-        <header style={style.header}>async colorfield</header>
+      <div id="container" style={style.container}>
+        <header style={style.header}>
+          <h1>async colorfield</h1>
+        </header>
         <main style={style.main}>
           <ColorStart startAction={this.startAsyncColors} />
           <ColorField colorField={colorField} />

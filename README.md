@@ -11,3 +11,5 @@ Scripts:
 # To Do:
 - Make color points visually load with D3 bubbles
 - Make color point load conditionally continue after each timeout-  chain promises (up to 3x) when `shouldUpdateColor` is true
+
+Helpful [D3 Tutorial](https://observablehq.com/@johnhaldeman/tutorial-on-d3-basics-and-circle-packing-heirarchical-bubb)
