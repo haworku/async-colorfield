@@ -1,4 +1,4 @@
-const COLORBLOCK_COLORS = {
+const COLORBUBBLE_COLORS = {
   goldenrod: '#cc9900',
   melon: '#ff9b71',
   deepcoral: '#c4635a',
@@ -13,16 +13,15 @@ const COLORBLOCK_COLORS = {
   evergreen: '#002e2c',
 };
 
-const COLORBLOCK_STATUS = {
+const COLORBUBBLE_STATUS = {
   INACTIVE: 0,
   ACTIVE: 1,
   COMPLETE: 2,
 };
 
-const COLORBLOCK_COLOR_DEFAULT = '#bcbcbc';
+const COLORBUBBLE_COLOR_DEFAULT = '#bcbcbc';
 
-// For the purposes of this project, this function cannot be changed
-// Imagine it is defined by a third party and must be lifted into a Promise in App.js
+// Imagine this function is defined by a third party and must be lifted into a Promise in App.js
 const colorblockLoad = () => {
   const delay = 2000 + Math.random() * 2000;
   const updateColor = Math.random() > 0.5; // true or false
@@ -36,10 +35,10 @@ const colorblockLoad = () => {
 };
 
 const getColorField = () => {
-  return Object.keys(COLORBLOCK_COLORS).reduce((acc, colorName, index) => {
+  return Object.keys(COLORBUBBLE_COLORS).reduce((acc, colorName, index) => {
     acc[index] = {
       name: colorName,
-      status: COLORBLOCK_STATUS.INACTIVE,
+      status: COLORBUBBLE_STATUS.INACTIVE,
       run: colorblockLoad(),
     };
     return acc;
@@ -47,8 +46,8 @@ const getColorField = () => {
 };
 
 export {
-  COLORBLOCK_COLORS,
-  COLORBLOCK_COLOR_DEFAULT,
-  COLORBLOCK_STATUS,
+  COLORBUBBLE_COLORS,
+  COLORBUBBLE_COLOR_DEFAULT,
+  COLORBUBBLE_STATUS,
   getColorField,
 };

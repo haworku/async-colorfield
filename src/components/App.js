@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ColorField from './ColorField';
 import ColorStart from './ColorStart';
-import { getColorField, COLORBLOCK_STATUS } from '../helpers';
+import { getColorField, COLORBUBBLE_STATUS } from '../helpers';
 
 const style = {
   container: {
@@ -23,66 +23,75 @@ class App extends Component {
   };
 
   // Update colorField nested state
-  updateColorField = (key, colorBlockKeyValue) => {
+  updateColorField = (key, colorBubbleKeyValue) => {
     const { colorField } = this.state;
-    const colorBlock = colorField[key];
+    const colorBubble = colorField[key];
 
     this.setState({
       colorField: {
         ...colorField,
         [key]: {
-          ...colorBlock,
-          ...colorBlockKeyValue,
+          ...colorBubble,
+          ...colorBubbleKeyValue,
         },
       },
     });
   };
 
-  returnColorLoadPromise = (colorBlock, colorFieldKey, newColorName) => {
+  returnColorLoadPromise = (colorBubble, colorFieldKey, newColorName) => {
     const self = this;
 
     return new Promise(resolve => {
+      let resolveMessage = '';
       const updateColorsAfterLoadCallback = shouldUpdateColor => {
         if (shouldUpdateColor) {
           self.updateColorField(colorFieldKey, {
-            status: COLORBLOCK_STATUS.COMPLETE,
+            status: COLORBUBBLE_STATUS.COMPLETE,
             name: newColorName,
           });
+          resolveMessage = 'Load Continue: Update Color';
         } else {
           self.updateColorField(colorFieldKey, {
-            status: COLORBLOCK_STATUS.COMPLETE,
+            status: COLORBUBBLE_STATUS.COMPLETE,
           });
+          resolveMessage = 'Load Complete';
         }
-        resolve();
+        resolve(resolveMessage);
       };
 
-      colorBlock.run(updateColorsAfterLoadCallback);
-    });
+      colorBubble.run(updateColorsAfterLoadCallback);
+    })
+      .then(data => data)
+      .catch(err => console.log('Error:', err));
   };
 
   startAsyncColors = () => {
     const { colorField } = this.state;
     const colorFieldArray = Object.keys(colorField);
-    const updatedColorBlocks = [];
+    const updatedColorBubbles = [];
     const promises = [];
 
     colorFieldArray.forEach(colorFieldKey => {
-      const colorBlock = {
+      const colorBubble = {
         ...colorField[colorFieldKey],
-        status: COLORBLOCK_STATUS.ACTIVE,
+        status: COLORBUBBLE_STATUS.ACTIVE,
       };
       const newColorIndex = Math.floor(Math.random() * colorFieldArray.length);
       const newColorName = colorField[newColorIndex].name;
-      updatedColorBlocks.push(colorBlock);
-      this.setState({ colorField: updatedColorBlocks });
+      updatedColorBubbles.push(colorBubble);
+      this.setState({ colorField: updatedColorBubbles });
 
-      const p = this.returnColorLoadPromise(colorBlock, colorFieldKey, newColorName);
+      const p = this.returnColorLoadPromise(
+        colorBubble,
+        colorFieldKey,
+        newColorName
+      );
 
       promises.push(p);
     });
 
     Promise.all(promises)
-      .then(console.log('COMPLETED'))
+      .then(data => console.log('COMPLETED', data))
       .catch(err => {
         console.error(err);
       });
