@@ -25,7 +25,6 @@ const COLORBUBBLE_COLOR_DEFAULT = '#bcbcbc';
 const colorblockLoad = () => {
   const delay = 2000 + Math.random() * 2000;
   const updateColor = Math.random() > 0.5; // true or false
-
   return function delayedLoad(callback) {
     // eslint-disable-next-line func-names
     setTimeout(function() {
@@ -37,9 +36,10 @@ const colorblockLoad = () => {
 const getColorField = () => {
   return Object.keys(COLORBUBBLE_COLORS).reduce((acc, colorName, index) => {
     acc[index] = {
+      loadCycles: 0,
       name: colorName,
+      run: colorblockLoad,
       status: COLORBUBBLE_STATUS.INACTIVE,
-      run: colorblockLoad(),
     };
     return acc;
   }, {});

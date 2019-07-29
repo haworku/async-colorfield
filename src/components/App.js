@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ColorField from './ColorField';
-import ColorStart from './ColorStart';
+import ActionButtons from './ActionButtons';
 import { getColorField, COLORBUBBLE_STATUS } from '../helpers';
 
 const style = {
@@ -19,7 +19,14 @@ const style = {
 
 class App extends Component {
   state = {
+    colorFieldClean: true,
+    colorFieldLoadCompleted: false,
     colorField: getColorField(),
+  };
+
+  getNewColor = colorField => {
+    const newColorIndex = Math.floor(Math.random() * Object.keys(colorField).length);
+    return colorField[newColorIndex].name;
   };
 
   // Update colorField nested state
@@ -40,29 +47,59 @@ class App extends Component {
 
   returnColorLoadPromise = (colorBubble, colorFieldKey, newColorName) => {
     const self = this;
-
     return new Promise(resolve => {
-      let resolveMessage = '';
+      const resolveData = {
+        colorFieldKey,
+        loadCycles: colorBubble.loadCycles + 1,
+        loadAgain: false,
+      };
+
       const updateColorsAfterLoadCallback = shouldUpdateColor => {
-        if (shouldUpdateColor) {
+        // Once bubble has reloaded 3x it is completed, otherwise use shouldUpdateColor variable to determine wether to chain additional load
+        if (resolveData.loadCycles < 5 && shouldUpdateColor) {
           self.updateColorField(colorFieldKey, {
-            status: COLORBUBBLE_STATUS.COMPLETE,
             name: newColorName,
+            loadCycles: resolveData.loadCycles,
           });
-          resolveMessage = 'Load Continue: Update Color';
+          resolveData.loadAgain = true;
         } else {
           self.updateColorField(colorFieldKey, {
             status: COLORBUBBLE_STATUS.COMPLETE,
+            loadCycles: resolveData.loadCycles,
           });
-          resolveMessage = 'Load Complete';
         }
-        resolve(resolveMessage);
+        resolve(resolveData);
       };
 
-      colorBubble.run(updateColorsAfterLoadCallback);
+      colorBubble.run()(updateColorsAfterLoadCallback);
     })
-      .then(data => data)
+      .then(data => {
+        if (data.loadAgain) {
+          // get updated colorField
+          const { colorField } = this.state;
+
+          // load again, passing along latest bubble data and a color for the load callback
+          const updatedColorBubble = colorField[colorFieldKey];
+          const updatedNewColor = this.getNewColor(colorField);
+          console.log('CHAINING PROMISE', colorFieldKey, updatedColorBubble);
+          return this.returnColorLoadPromise(
+            updatedColorBubble,
+            colorFieldKey,
+            updatedNewColor
+          );
+        }
+        return data;
+      })
       .catch(err => console.log('Error:', err));
+  };
+
+  resetColorField = () => {
+    // Add a way to cancel promise chaining and exit async
+    this.setState({
+      colorField: getColorField(),
+      colorFieldClean: true,
+      colorFieldLoadCompleted: false,
+    });
   };
 
   startAsyncColors = () => {
@@ -71,13 +108,15 @@ class App extends Component {
     const updatedColorBubbles = [];
     const promises = [];
 
+    this.setState({ colorFieldClean: false });
+
     colorFieldArray.forEach(colorFieldKey => {
       const colorBubble = {
         ...colorField[colorFieldKey],
         status: COLORBUBBLE_STATUS.ACTIVE,
       };
-      const newColorIndex = Math.floor(Math.random() * colorFieldArray.length);
-      const newColorName = colorField[newColorIndex].name;
+      const newColorName = this.getNewColor(colorField);
+
       updatedColorBubbles.push(colorBubble);
       this.setState({ colorField: updatedColorBubbles });
 
@@ -91,22 +130,30 @@ class App extends Component {
     });
 
     Promise.all(promises)
-      .then(data => console.log('COMPLETED', data))
-      .catch(err => {
-        console.error(err);
-      });
+      .then(data => {
+        console.log('COMPLETED', data);
+        this.setState({ colorFieldLoadCompleted: true });
+      })
+      .catch(err => console.error('Error:', err));
   };
 
   render() {
-    const { colorField } = this.state;
+    const { colorField, colorFieldClean, colorFieldLoadCompleted } = this.state;
     return (
       <div id="container" style={style.container}>
         <header style={style.header}>
           <h1>async colorfield</h1>
         </header>
         <main style={style.main}>
-          <ColorStart startAction={this.startAsyncColors} />
-          <ColorField colorField={colorField} />
+          <ActionButtons
+            resetAction={this.resetColorField}
+            showStart={colorFieldClean}
+            startAction={this.startAsyncColors}
+          />
+          <ColorField
+            colorField={colorField}
+            loadIsCompleted={colorFieldLoadCompleted}
+          />
         </main>
       </div>
     );

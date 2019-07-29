@@ -92,6 +92,13 @@ class ColorField extends Component {
           .data(newData)
           .style('fill', d => this.getFill(d.data.status, color(d.data.name)))
           .style('stroke', d => this.getStroke(d.data.status, color(d.data.name)));
+
+        if (this.props.loadIsCompleted) {
+          console.log('IN THIS');
+          d3VizCircles
+            .append('title')
+            .text(d => `Load Cycles: ${d.data.loadCycles}`);
+        }
       }
     });
   }
