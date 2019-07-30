@@ -81,7 +81,7 @@ class App extends Component {
           // load again, passing along latest bubble data and a color for the load callback
           const updatedColorBubble = colorField[colorFieldKey];
           const updatedNewColor = this.getNewColor(colorField);
-          console.log('CHAINING PROMISE', colorFieldKey, updatedColorBubble);
+
           return this.returnColorLoadPromise(
             updatedColorBubble,
             colorFieldKey,
@@ -131,7 +131,6 @@ class App extends Component {
 
     Promise.all(promises)
       .then(data => {
-        console.log('COMPLETED', data);
         this.setState({ colorFieldLoadCompleted: true });
       })
       .catch(err => console.error('Error:', err));
@@ -148,6 +147,7 @@ class App extends Component {
           <ActionButtons
             resetAction={this.resetColorField}
             showStart={colorFieldClean}
+            loadIsCompleted={colorFieldLoadCompleted}
             startAction={this.startAsyncColors}
           />
           <ColorField

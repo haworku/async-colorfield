@@ -1,10 +1,10 @@
 const COLORBUBBLE_COLORS = {
   goldenrod: '#cc9900',
-  melon: '#ff9b71',
   deepcoral: '#c4635a',
   eggplant: '#553e4e',
   cranberry: '#6b2737',
   grape: '#a379c9',
+  mauve: '#b08ea2',
   lake: '#63b4d1',
   grass: '#a1c181',
   cucumber: '#619b8a',

@@ -9,34 +9,34 @@ const style = {
   },
 };
 
-class ActionButtons extends Component {
-  render() {
-    const { showStart } = this.props;
-    return (
-      <div id="ActionButtons">
-        {showStart && (
-          <button
-            id="ColorStartButton"
-            type="button"
-            style={style.button}
-            onClick={this.props.startAction}
-          >
-            <span> start the colors </span>
-          </button>
-        )}
-        {!showStart && (
-          <button
-            id="ColorResetButton"
-            type="button"
-            style={style.button}
-            onClick={this.props.resetAction}
-          >
-            <span> reset colors </span>
-          </button>
-        )}
-      </div>
-    );
-  }
-}
+const ActionButtons = props => {
+  const { loadIsCompleted, resetAction, showStart, startAction } = props;
+  return (
+    <div id="ActionButtons">
+      {showStart && (
+        <button
+          id="ColorStartButton"
+          type="button"
+          style={style.button}
+          onClick={startAction}
+        >
+          <span> start the colors </span>
+        </button>
+      )}
+      {!showStart && (
+        <button
+          id="ColorResetButton"
+          type="button"
+          style={style.button}
+          onClick={resetAction}
+        >
+          <span> reset colors </span>
+        </button>
+      )}
+      {!showStart && !loadIsCompleted && <span> loading in progress ..</span>}
+      {!showStart && loadIsCompleted && <span> COMPLETED!!! </span>}
+    </div>
+  );
+};
 
 export default ActionButtons;

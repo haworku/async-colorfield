@@ -21,6 +21,7 @@
     "d3-hierarchy": "^1.1.8",
     "d3-scale": "^3.0.0",
     "d3-selection": "^1.4.0",
+    "d3-transition": "^1.2.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },

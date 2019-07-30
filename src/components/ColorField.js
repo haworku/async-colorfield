@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { pack as D3Pack, hierarchy as D3Hierarchy } from 'd3-hierarchy';
+import 'd3-transition';
+import { hierarchy as D3Hierarchy, pack as D3Pack } from 'd3-hierarchy';
 import { scaleOrdinal as D3ScaleOrdinal } from 'd3-scale';
 import { select as D3Select } from 'd3-selection';
 import {
@@ -11,12 +12,7 @@ import {
 const style = {
   container: {
     backgroundColor: '#fff',
-    border: '1px solid black',
-    borderRadius: ' 8px',
-    display: 'flex',
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%',
+    boxSizing: 'border-box',
   },
 };
 
@@ -62,15 +58,29 @@ class ColorField extends Component {
 
     leaf
       .append('circle')
+      .attr('class', 'bubbles')
       .attr('r', d => d.r)
       .attr('name', d => d.data.name)
       .style('stroke-width', 3)
       .style('fill', d => this.getFill(d.data.status, color(d.data.name)))
+      .style('opacity', 0.6)
       .style('stroke', d => this.getStroke(d.data.status, color(d.data.name)));
+
+    // Add invisible tooltip
+    D3Select('#ColorField')
+      .append('div')
+      .style('opacity', 0)
+      .attr('class', 'tooltip')
+      .style('background-color', 'black')
+      .style('border-radius', '5px')
+      .style('position', 'absolute')
+      .style('z-index', '10')
+      .style('padding', '10px')
+      .style('color', 'white');
   }
 
   componentDidUpdate() {
-    const { colorField } = this.props;
+    const { colorField, loadIsCompleted } = this.props;
     const colorFieldKeys = Object.keys(colorField);
     const d3VizCircles = D3Select('#ColorField').selectAll('circle');
     const d3VizData = d3VizCircles.data();
@@ -87,20 +97,51 @@ class ColorField extends Component {
           ...d3VizData[key].data,
           ...colorField[key],
         };
-
         d3VizCircles
           .data(newData)
-          .style('fill', d => this.getFill(d.data.status, color(d.data.name)))
-          .style('stroke', d => this.getStroke(d.data.status, color(d.data.name)));
-
-        if (this.props.loadIsCompleted) {
-          console.log('IN THIS');
-          d3VizCircles
-            .append('title')
-            .text(d => `Load Cycles: ${d.data.loadCycles}`);
-        }
+          .transition()
+          .duration(200)
+          .style('stroke', d => this.getStroke(d.data.status, color(d.data.name)))
+          .style('fill', d => this.getFill(d.data.status, color(d.data.name)));
       }
     });
+
+    if (loadIsCompleted) {
+      d3VizCircles.style('opacity', 1).style('stroke', d => d.data.name);
+
+      const tooltip = D3Select('#ColorField').selectAll('.tooltip');
+
+      const showTooltip = function(d) {
+        D3Select(this).style('stroke', 'black');
+
+        tooltip
+          .transition()
+          .duration(200)
+          .style('opacity', 1)
+          .text(`Load Cycles: ${d.data.loadCycles}`)
+          .style('pointer-events', 'all')
+          .style('left', `${d.x + 10}px`)
+          .style('top', `${d.y + 10}px`);
+      };
+
+      const moveTooltip = function(d) {
+        tooltip.style('left', `${d.x + 10}px`).style('top', `${d.y + 10}px`);
+      };
+
+      const hideTooltip = function(d) {
+        D3Select(this).style('stroke', COLORBUBBLE_COLOR_DEFAULT);
+
+        tooltip
+          .transition()
+          .duration(200)
+          .style('opacity', 0);
+      };
+
+      d3VizCircles
+        .on('mouseover', showTooltip)
+        .on('mousemove', moveTooltip)
+        .on('mouseleave', hideTooltip);
+    }
   }
 
   getFill = (status, color) => {
@@ -114,6 +155,8 @@ class ColorField extends Component {
   };
 
   getStroke = (status, color) => {
+    if (this.props.loadIsCompleted) return null;
+
     switch (status) {
       case COLORBUBBLE_STATUS.ACTIVE:
         return color;

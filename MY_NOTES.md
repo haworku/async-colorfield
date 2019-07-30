@@ -144,11 +144,7 @@ p.then( function(v){
 	console.log( v );	// 42
 } );
 ```
-Splitting and forking Promises
--   
-- 
--   
+ 
 ## Other Resources
-- Rethinking Asynchronous JavaScript - Kyle Simpson - You Don't Know JS: Async & Performance 
 - [Deeply Understanding JavaScript Async and Await with Examples](https://blog.bitsrc.io/understanding-javascript-async-and-await-with-examples-a010b03926ea)
 - [Frontend Masters: Rethinking Asynchronous Javascript](https://frontendmasters.com/courses/rethinking-async-js/)
